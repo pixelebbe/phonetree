@@ -36,7 +36,7 @@ def get_local_ip():
 
 def play_audio(call, filename):
     try:
-        with wave.open(f'audio/{filename}.wav', 'rb') as f:
+        with wave.open(f'{config.AUDIO_DIR}/{filename}.wav', 'rb') as f:
             frames = f.getnframes()
             data = f.readframes(frames)
             call.write_audio(data)
