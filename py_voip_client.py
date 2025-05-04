@@ -97,7 +97,10 @@ def set_pixel(x, y, color):
         return False
 
 def answer(call):
+    origin = call.request.headers['From']
     try:
+        logger.info(f"Handling incoming call from {origin['number']} at {origin['host']}.")
+        logger.debug("Full 'from' header: ", origin)
         call.answer()
         result = {"success": False, "x": None, "y": None, "color": None}
         attempts = 0
@@ -148,17 +151,17 @@ def answer(call):
 
         # Log the call outcome
         if result["success"]:
-            logger.info(f"Call completed: pixel set at x={result['x']}, y={result['y']}, color={result['color']} after {attempts} attempts.")
+            logger.info(f"Call completed: {origin['number']} from {origin['host']} had {attempts} attempts and set a pixel at x={result['x']}, y={result['y']}, color={result['color']}.")
         else:
             if result["x"] is not None:
-                logger.error(f"Call failed: could not set pixel at x={result['x']}, y={result['y']}, color={result['color']} after {attempts} attempts.")
+                logger.error(f"Call failed: {origin['number']} from {origin['host']} had {attempts} attempts and failed to set a pixel at x={result['x']}, y={result['y']}, color={result['color']}.")
             else:
-                logger.error(f"Call failed: no valid input received after {attempts} attempts.")
+                logger.error(f"Call failed: {origin['number']} from {origin['host']} had {attempts} attempts and provided no valid input.")
         
     except InvalidStateError:
-        logger.error("Call failed: invalid call state")
+        logger.error(f"Call failed: {origin['number']} at {origin['host']} produced an invalid call state")
     except Exception as e:
-        logger.error(f"Call failed: unexpected error - {str(e)}")
+        logger.error(f"Call failed: {origin['number']} at {origin['host']} produced an unexpected error - {str(e)}")
         try:
             play_audio(call, 'error')
             play_audio(call, 'bye')
