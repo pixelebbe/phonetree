@@ -1,0 +1,3 @@
+pyvoip>=1.6.5
+requests>=2.31.0
+wave>=0.0.2
