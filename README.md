@@ -19,9 +19,27 @@ The expected behaviour is:
 
 - Python 3.6+
 - EventPhone SIP Extension or Fritz!Box PBX for testing
-- Audio files for prompts and messages
 
-## Installation
+## Quick Setup
+
+The easiest way to set up the project is to use the automated setup script:
+
+```bash
+python setup.py
+```
+
+This will:
+1. Create a Python virtual environment
+2. Install all required dependencies
+3. Create a config.py file from the example
+
+After running the setup script:
+1. Edit `config.py` with your SIP credentials and server settings
+2. Activate the virtual environment and run the service
+
+## Manual Installation
+
+If you prefer to set up manually, follow these steps:
 
 1. Create and activate a Python virtual environment:
    ```bash
@@ -46,19 +64,17 @@ The expected behaviour is:
    ```
    Then edit `config.py` with your SIP credentials and server settings.
 
-4. Create an `audio` directory and add the required sound files:
-   ```bash
-   mkdir audio
-   ```
-   Required audio files (8kHz, mono, 16-bit WAV format):
-   - welcome.wav - Initial greeting
-   - input.wav - Prompt for pixel coordinates and color
-   - invalid.wav - Invalid input message
-   - tryagain.wav - Prompt to try input again
-   - saving.wav - Saving/processing message
-   - success.wav - Success message
-   - error.wav - Error message
-   - bye.wav - Goodbye message
+## Included Audio Files
+
+The repository includes all necessary audio files (8kHz, mono, 16-bit WAV format):
+- welcome.wav - Initial greeting
+- input.wav - Prompt for pixel coordinates and color
+- invalid.wav - Invalid input message
+- tryagain.wav - Prompt to try input again
+- saving.wav - Saving/processing message
+- success.wav - Success message
+- error.wav - Error message
+- bye.wav - Goodbye message
 
 ## Running the Service
 
@@ -98,39 +114,8 @@ Any 2xx response code is considered successful.
    - Look for SIP registration errors or connection issues
 
 2. Common issues:
-   - Sound files missing or wrong format
    - Wrong SIP credentials in config.py
    - Network/firewall blocking SIP traffic
    - Wrong server address or port
-   - Audio files not found
    - Virtual environment not activated (pip/python using system installation)
    - config.py not created or misconfigured
-
-## Security Notes
-
-1. Use strong passwords for SIP registration
-2. Never commit your `config.py` file (it's in .gitignore)
-3. Use HTTPS for the pixelebbe server connection if possible
-4. Consider using TLS for SIP if supported by your provider
-5. Keep your PyVoIP and other dependencies up to date
-
-## Configuration
-
-Copy `config.example.py` to `config.py` and update the following values:
-
-```python
-# SIP Configuration
-SIP_USER = "your_extension"      # Your SIP extension
-SIP_PASSWORD = "your_password"   # Your SIP password
-SIP_DOMAIN = "pbx.example.com"   # Your PBX server address
-SIP_PORT = 5060                  # SIP port (usually 5060)
-
-# Pixelebbe Server Configuration
-PIXELEBBE_URL = "http://localhost:8080"  # Pixelebbe server URL
-
-# Audio files directory
-AUDIO_DIR = "audio"             # Directory containing audio files
-
-# Maximum retries for invalid input
-MAX_RETRIES = 3                 # Number of attempts allowed for valid input
-```
