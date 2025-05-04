@@ -7,13 +7,13 @@ The expected behaviour is:
 1. User calls Eventphone Extension, the PyVoIP client picks up and plays welcome message
 2. User inputs pixel coordinates and color in the format `#x#y#color*`. Any input before the first # is discarded.
 3. The service validates the input and forwards the request to the pixelebbe server:
-   - If input is invalid on first try: play invalid message followed by try again prompt
-   - If input is invalid on second try: play invalid message
-   - If input is invalid on third try: play invalid message and end call
+   - If input is invalid: play invalid message
+   - If not the last attempt: also play try again message
    - If input is valid: play saving message, make API request
      - On success: play success message
      - On failure: play error message
-4. Play goodbye message and hang up
+4. Repeat from step 2 until valid input or max retries reached
+5. Play goodbye message and hang up
 
 ## Prerequisites
 
@@ -130,4 +130,7 @@ PIXELEBBE_URL = "http://localhost:8080"  # Pixelebbe server URL
 
 # Audio files directory
 AUDIO_DIR = "audio"             # Directory containing audio files
+
+# Maximum retries for invalid input
+MAX_RETRIES = 3                 # Number of attempts allowed for valid input
 ```

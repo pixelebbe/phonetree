@@ -83,7 +83,7 @@ def answer(call):
         # Play welcome message
         play_audio(call, 'welcome')
         
-        for attempt in range(3):  # Allow 2 attempts for valid input
+        for attempt in range(config.MAX_RETRIES):
             # Ask for input
             play_audio(call, 'input')
             
@@ -97,11 +97,9 @@ def answer(call):
             
             if pixel_data is None:
                 # Invalid input
-                if attempt == 0:
-                    play_audio(call, 'invalid')
+                play_audio(call, 'invalid')
+                if attempt < config.MAX_RETRIES - 1:  # Don't play tryagain on last attempt
                     play_audio(call, 'tryagain')
-                else:
-                    play_audio(call, 'invalid')
                 continue
             
             # Valid input received
