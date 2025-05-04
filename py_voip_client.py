@@ -13,7 +13,7 @@ os.makedirs('logs', exist_ok=True)
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG if config.DEBUG_MODE else logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler(f'logs/phonetree_{datetime.now().strftime("%Y%m%d")}.log'),
@@ -100,7 +100,7 @@ def answer(call):
     origin = call.request.headers['From']
     try:
         logger.info(f"Handling incoming call from {origin['number']} at {origin['host']}.")
-        logger.debug("Full 'from' header: ", origin)
+        logger.debug(f"Full 'from' header: {str(origin)}")
         call.answer()
         result = {"success": False, "x": None, "y": None, "color": None}
         attempts = 0

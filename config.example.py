@@ -1,3 +1,6 @@
+# Log Configuration
+DEBUG_MODE = False
+
 # SIP Configuration 
 SIP_USER = "your_extension"
 SIP_PASSWORD = "your_password"
