@@ -87,7 +87,7 @@ def parse_pixel_input(input_str):
 def set_pixel(x, y, color):
     """Send pixel update request to the server."""
     try:
-        requesturl = f"{config.PIXELEBBE_URL}/api/setpixel?public_key={config.PIXELEBBE_PUBLIC_KEY}&event={config.PIXELEBBE_EVENT_SLUG}&color={color}&x={x}&y={y}"
+        requesturl = f"{config.PIXELEBBE_URL}/api/setpixel?public_key={config.PIXELEBBE_PUBLIC_KEY}&event={config.PIXELEBBE_EVENT_SLUG}&color={color}&x={x}&y={y}&grid=canv"
         response = requests.post(requesturl,
             data={"private_key": config.PIXELEBBE_PRIVATE_KEY})
         logger.info(f"Posted data: {requesturl}, got: {response.content}")
