@@ -78,7 +78,7 @@ def parse_pixel_input(input_str):
         # Convert to integers
         x = int(parts[0])
         y = int(parts[1])
-        color = int(parts[2])
+        color = config.PIXELEBBE_SUPPORTED_COLORS[int(parts[2])]
         
         return (x, y, color)
     except (ValueError, IndexError):
@@ -87,7 +87,10 @@ def parse_pixel_input(input_str):
 def set_pixel(x, y, color):
     """Send pixel update request to the server."""
     try:
-        response = requests.get(f"{config.PIXELEBBE_URL}/pixel/{x}/{y}/{color}")
+        requesturl = f"{config.PIXELEBBE_URL}/api/setpixel?public_key={config.PIXELEBBE_PUBLIC_KEY}&event={config.PIXELEBBE_EVENT_SLUG}&color={color}&x={x}&y={y}"
+        response = requests.post(requesturl,
+            data={"private_key": config.PIXELEBBE_PRIVATE_KEY})
+        logger.info(f"Posted data: {requesturl}, got: {response.content}")
         return str(response.status_code)[0] == "2"
     except Exception as e:
         logger.error(f"Failed to set pixel (x={x}, y={y}, color={color}): {e}")
