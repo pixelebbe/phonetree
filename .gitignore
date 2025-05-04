@@ -16,4 +16,5 @@ config.py
 .idea/
 
 # Logs
+logs/
 *.log 

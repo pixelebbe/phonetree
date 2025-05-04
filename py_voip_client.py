@@ -4,6 +4,23 @@ import wave
 import config
 import socket
 import requests
+import logging
+import os
+from datetime import datetime
+
+# Create logs directory if it doesn't exist
+os.makedirs('logs', exist_ok=True)
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(f'logs/phonetree_{datetime.now().strftime("%Y%m%d")}.log'),
+        logging.StreamHandler()  # Also log to console
+    ]
+)
+logger = logging.getLogger(__name__)
 
 def get_local_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -24,7 +41,7 @@ def play_audio(call, filename):
             data = f.readframes(frames)
             call.write_audio(data)
     except Exception as e:
-        print(f"Error playing {filename}: {e}")
+        logger.error(f"Error playing audio {filename}: {e}")
 
 def collect_input(call, max_digits=20):
     """Collect DTMF input until * is pressed or max_digits is reached."""
@@ -73,17 +90,20 @@ def set_pixel(x, y, color):
         response = requests.get(f"{config.PIXELEBBE_URL}/pixel/{x}/{y}/{color}")
         return str(response.status_code)[0] == "2"
     except Exception as e:
-        print(f"Error setting pixel: {e}")
+        logger.error(f"Failed to set pixel (x={x}, y={y}, color={color}): {e}")
         return False
 
 def answer(call):
     try:
         call.answer()
+        result = {"success": False, "x": None, "y": None, "color": None}
+        attempts = 0
         
         # Play welcome message
         play_audio(call, 'welcome')
         
         for attempt in range(config.MAX_RETRIES):
+            attempts = attempt + 1
             # Ask for input
             play_audio(call, 'input')
             
@@ -91,25 +111,27 @@ def answer(call):
             user_input = collect_input(call)
             if not user_input:
                 continue
-                
+            
             # Parse input
             pixel_data = parse_pixel_input(user_input)
             
             if pixel_data is None:
                 # Invalid input
                 play_audio(call, 'invalid')
-                if attempt < config.MAX_RETRIES - 1:  # Don't play tryagain on last attempt
+                if attempt < config.MAX_RETRIES - 1:
                     play_audio(call, 'tryagain')
                 continue
             
             # Valid input received
             x, y, color = pixel_data
+            result.update({"x": x, "y": y, "color": color})
             
             # Inform user we're processing
             play_audio(call, 'saving')
             
             # Try to set the pixel
             if set_pixel(x, y, color):
+                result["success"] = True
                 play_audio(call, 'success')
             else:
                 play_audio(call, 'error')
@@ -118,13 +140,22 @@ def answer(call):
         
         # Play goodbye message and hang up
         play_audio(call, 'bye')
-        time.sleep(5)  # Give the audio time to play
+        time.sleep(6)  # Give the audio time to play
         call.hangup()
+
+        # Log the call outcome
+        if result["success"]:
+            logger.info(f"Call completed: pixel set at x={result['x']}, y={result['y']}, color={result['color']} after {attempts} attempts.")
+        else:
+            if result["x"] is not None:
+                logger.error(f"Call failed: could not set pixel at x={result['x']}, y={result['y']}, color={result['color']} after {attempts} attempts.")
+            else:
+                logger.error(f"Call failed: no valid input received after {attempts} attempts.")
         
     except InvalidStateError:
-        pass
+        logger.error("Call failed: invalid call state")
     except Exception as e:
-        print(f"Error in call handler: {e}")
+        logger.error(f"Call failed: unexpected error - {str(e)}")
         try:
             play_audio(call, 'error')
             play_audio(call, 'bye')
@@ -134,8 +165,13 @@ def answer(call):
 
 if __name__ == '__main__':
     local_ip = get_local_ip()
-    print(f"Using local IP: {local_ip}")
+    logger.info(f"Starting phone tree service on {local_ip}")
     phone = VoIPPhone(config.SIP_DOMAIN, config.SIP_PORT, config.SIP_USER, config.SIP_PASSWORD, myIP=local_ip, callCallback=answer)
     phone.start()
-    input('Press enter to disable the phone')
-    phone.stop()
+    try:
+        input('Press enter to disable the phone')
+    except KeyboardInterrupt:
+        pass
+    finally:
+        phone.stop()
+        logger.info("Phone tree service stopped")
