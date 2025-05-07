@@ -43,7 +43,7 @@ def setup_config():
     
     print("Creating config.py...")
     try:
-        shutil.copy("config.example.py", "config.py")
+        shutil.copy("example.config.py", "config.py")
         print("\nPlease edit config.py with your settings:")
         print("- Set SIP_USER to your extension")
         print("- Set SIP_PASSWORD to your password")

@@ -1,7 +1,7 @@
 # Log Configuration
 DEBUG_MODE = False
 
-# SIP Configuration 
+# SIP Configuration
 SIP_USER = "your_extension"
 SIP_PASSWORD = "your_password"
 SIP_DOMAIN = "pbx.example.com"
@@ -23,7 +23,7 @@ PIXELEBBE_SUPPORTED_COLORS = (
     'Y1', 'Y2', 'Y3', 'Y4')
 
 # Audio files directory
-AUDIO_DIR = "audio"
+AUDIO_DIR = "audio-0db"
 
 # Maximum retries
-MAX_RETRIES = 3 
+MAX_RETRIES = 3
