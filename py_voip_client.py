@@ -35,12 +35,10 @@ def get_local_ip():
         s.close()
     return IP
 
-def play_audio(call, filename):
+def play_audio(call, filename, magic=1):
     try:
         with wave.open(f'{config.AUDIO_DIR}/{filename}.wav', 'rb') as f:
-            frames = f.getnframes()
-            if filename == 'waiting':
-                frames = frames // random.randint(1, 15)
+            frames = f.getnframes() // magic
             data = f.readframes(frames)
             call.write_audio(data)
     except Exception as e:
@@ -102,13 +100,15 @@ def set_pixel(x, y, color):
 def answer(call):
     origin = call.request.headers['From']
     try:
-        logger.info(f"Handling incoming call from {origin['number']} at {origin['host']}.")
+        logger.info(f"Handling incoming call from {origin['number']}@{origin['host']}.")
         logger.debug(f"Full 'from' header: {str(origin)}")
         call.answer()
         result = {"success": False, "x": None, "y": None, "color": None}
         attempts = 0
         
         # make user wait for random amount of time
+        magic = random.randint(1, 15)
+        logger.info(f"Making {origin['number']}@{origin['host']} wait for {magic} seconds. hehe :3")
         play_audio(call, 'waiting')
 
         time.sleep(2)
@@ -159,17 +159,17 @@ def answer(call):
 
         # Log the call outcome
         if result["success"]:
-            logger.info(f"Call completed: {origin['number']} from {origin['host']} had {attempts} attempts and set a pixel at x={result['x']}, y={result['y']}, color={result['color']}.")
+            logger.info(f"Call completed: {origin['number']}@{origin['host']} had {attempts} attempts and set a pixel at x={result['x']}, y={result['y']}, color={result['color']}.")
         else:
             if result["x"] is not None:
-                logger.error(f"Call failed: {origin['number']} from {origin['host']} had {attempts} attempts and failed to set a pixel at x={result['x']}, y={result['y']}, color={result['color']}.")
+                logger.error(f"Call failed: {origin['number']}@{origin['host']} had {attempts} attempts and failed to set a pixel at x={result['x']}, y={result['y']}, color={result['color']}.")
             else:
-                logger.error(f"Call failed: {origin['number']} from {origin['host']} had {attempts} attempts and provided no valid input.")
+                logger.error(f"Call failed: {origin['number']}@{origin['host']} had {attempts} attempts and provided no valid input.")
         
     except InvalidStateError:
-        logger.error(f"Call failed: {origin['number']} at {origin['host']} produced an invalid call state")
+        logger.error(f"Call failed: {origin['number']}@{origin['host']} produced an invalid call state")
     except Exception as e:
-        logger.error(f"Call failed: {origin['number']} at {origin['host']} produced an unexpected error - {str(e)}")
+        logger.error(f"Call failed: {origin['number']}@{origin['host']} produced an unexpected error - {str(e)}")
         try:
             play_audio(call, 'error')
             play_audio(call, 'bye')
