@@ -108,8 +108,8 @@ def answer(call):
         
         # make user wait for random amount of time
         magic = random.randint(1, 15)
-        logger.info(f"Making {origin['number']}@{origin['host']} wait for {magic} seconds. hehe :3")
-        play_audio(call, 'waiting')
+        logger.info(f"Making {origin['number']}@{origin['host']} wait for 1/{magic} of the waiting message. hehe :3")
+        play_audio(call, 'waiting', magic)
 
         time.sleep(2)
 
