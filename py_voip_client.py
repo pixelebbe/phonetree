@@ -6,6 +6,7 @@ import socket
 import requests
 import logging
 import os
+import random
 from datetime import datetime
 
 # Create logs directory if it doesn't exist
@@ -38,6 +39,8 @@ def play_audio(call, filename):
     try:
         with wave.open(f'{config.AUDIO_DIR}/{filename}.wav', 'rb') as f:
             frames = f.getnframes()
+            if filename == 'waiting':
+                frames = frames / random.randint(1, 15)
             data = f.readframes(frames)
             call.write_audio(data)
     except Exception as e:
@@ -105,6 +108,9 @@ def answer(call):
         result = {"success": False, "x": None, "y": None, "color": None}
         attempts = 0
         
+        # make user wait for random amount of time
+        play_audio(call, 'waiting')
+
         # Play welcome message
         play_audio(call, 'welcome')
         
