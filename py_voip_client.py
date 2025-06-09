@@ -111,6 +111,8 @@ def answer(call):
         # make user wait for random amount of time
         play_audio(call, 'waiting')
 
+        time.sleep(2)
+
         # Play welcome message
         play_audio(call, 'welcome')
         
