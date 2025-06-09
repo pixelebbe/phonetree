@@ -40,7 +40,7 @@ def play_audio(call, filename):
         with wave.open(f'{config.AUDIO_DIR}/{filename}.wav', 'rb') as f:
             frames = f.getnframes()
             if filename == 'waiting':
-                frames = frames / random.randint(1, 15)
+                frames = frames // random.randint(1, 15)
             data = f.readframes(frames)
             call.write_audio(data)
     except Exception as e:
