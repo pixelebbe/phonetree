@@ -38,9 +38,17 @@ def get_local_ip():
 def play_audio(call, filename, magic=1):
     try:
         with wave.open(f'{config.AUDIO_DIR}/{filename}.wav', 'rb') as f:
-            frames = f.getnframes() // magic
+            # Get audio parameters
+            n_frames = f.getnframes()
+            frame_rate = f.getframerate()
+            # Calculate duration in seconds
+            duration = n_frames / frame_rate / magic
+            # Read and play the audio
+            frames = n_frames // magic
             data = f.readframes(frames)
             call.write_audio(data)
+            # Sleep for the duration of the audio
+            time.sleep(duration)
     except Exception as e:
         logger.error(f"Error playing audio {filename}: {e}")
 
@@ -111,12 +119,14 @@ def answer(call):
         logger.info(f"Making {origin['number']}@{origin['host']} wait for 1/{magic} of the waiting message. hehe :3")
         play_audio(call, 'waiting', magic)
 
-        time.sleep(2)
+        time.sleep(1)
 
         # Play welcome message
         play_audio(call, 'welcome')
         
         for attempt in range(config.MAX_RETRIES):
+            call.get_dtmf(length=1000) # Clear the dtmf buffer
+            
             attempts = attempt + 1
             # Ask for input
             play_audio(call, 'input')
