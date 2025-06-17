@@ -119,7 +119,7 @@ def answer(call):
         logger.info(f"Making {origin['number']}@{origin['host']} wait for 1/{magic} of the waiting message. hehe :3")
         play_audio(call, 'waiting', magic)
 
-        time.sleep(1)
+        time.sleep(0.5)
 
         # Play welcome message
         play_audio(call, 'welcome')
@@ -164,7 +164,6 @@ def answer(call):
         
         # Play goodbye message and hang up
         play_audio(call, 'bye')
-        time.sleep(6)  # Give the audio time to play
         call.hangup()
 
         # Log the call outcome
