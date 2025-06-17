@@ -89,6 +89,7 @@ def parse_pixel_input(input_str):
         y = int(parts[1])
         color = config.PIXELEBBE_SUPPORTED_COLORS[int(parts[2])]
         
+        logger.debug(f"Parsed pixel input: x={x}, y={y}, color={color}")
         return (x, y, color)
     except (ValueError, IndexError):
         return None
