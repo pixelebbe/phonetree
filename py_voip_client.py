@@ -109,7 +109,7 @@ def set_pixel(x, y, color):
 def answer(call):
     origin = call.request.headers['From']
     try:
-        logger.info(f"Handling incoming call from {origin['number']}@{origin['host']}.")
+        logger.info(f"Handling incoming call from {origin['caller']} ({origin['number']}@{origin['host']}).")
         logger.debug(f"Full 'from' header: {str(origin)}")
         call.answer()
         result = {"success": False, "x": None, "y": None, "color": None}
