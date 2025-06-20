@@ -166,6 +166,7 @@ def answer(call):
         
         # Play goodbye message and hang up
         play_audio(call, 'bye')
+        time.sleep(1)
         call.hangup()
 
         # Log the call outcome
