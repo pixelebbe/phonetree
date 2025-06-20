@@ -88,7 +88,7 @@ def parse_pixel_input(input_str):
         # Convert to integers
         x = int(parts[0])
         y = int(parts[1])
-        color = config.PIXELEBBE_SUPPORTED_COLORS[int(parts[2])+1]
+        color = config.PIXELEBBE_SUPPORTED_COLORS[int(parts[2])-1]
         
         logger.debug(f"Parsed pixel input: x={x}, y={y}, color={color} from {initial_input}")
         return (x, y, color)
