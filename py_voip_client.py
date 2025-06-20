@@ -66,6 +66,7 @@ def collect_input(call, max_digits=20):
 
 def parse_pixel_input(input_str):
     """Parse input in format #x#y#color*"""
+    initial_input = input_str
     try:
         # Find the first # and remove everything before it
         start_idx = input_str.find('#')
@@ -89,7 +90,7 @@ def parse_pixel_input(input_str):
         y = int(parts[1])
         color = config.PIXELEBBE_SUPPORTED_COLORS[int(parts[2])]
         
-        logger.debug(f"Parsed pixel input: x={x}, y={y}, color={color}")
+        logger.debug(f"Parsed pixel input: x={x}, y={y}, color={color} from {initial_input}")
         return (x, y, color)
     except (ValueError, IndexError):
         return None
